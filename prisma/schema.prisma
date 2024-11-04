@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+model UserDetails{
+  userId Int @id @default(autoincrement())
+  username String
+  email String @unique
+  password String @unique
+  profilePictureUrl String
+  accId Int?
+  TransactionId Int
+  SavedId Int
+  balanceId Int
+  balance AccountBalance[] @relation(fields: [balanceId],references: [Balanceid])
+  accdetail AccountDetails[] @relation(fields: [accId],references: [accountId])
+  savings SavingAccount[] @relation(fields: [SavedId],references: [Savingid])
+  transactions Transaction[] @relation(fields: [TransactionId],references: [transactionId])
+}
+
+model AccountDetails{
+  BankName String
+  accountId Int @id @default(autoincrement()) 
+  accountHolderName String
+  AccountPin Int @unique
+  currentbalance AccountBalance[]
+  user UserDetails[]
+
+  
+}
+model AccountBalance{
+  Balanceid  Int @id @default(autoincrement())
+  currentbalance Int
+  totalbalance Int
+  user UserDetails[]
+  accDetails AccountDetails[]
+  transactions Transaction[]
+  
+}
+
+model Transaction{
+   transactionId  Int @id @default(autoincrement())
+   moneyDebited Int 
+   moneyCredited Int
+   balance AccountBalance[]
+   userId Int
+   user UserDetails[] @relation(fields: [id],references: [userId])
+
+}
+model SavingAccount{
+  Savingid Int @id @default(autoincrement())
+  savedBalance Int
+  id Int
+  user UserDetails[] @relation(fields: [id],references: [userId])
+
+}
